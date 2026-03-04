@@ -11,8 +11,11 @@ import com.chathum.assignment03miniproject.adapter.TaskAdapter
 import com.chathum.assignment03miniproject.viewmodel.TaskViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
+
 class MainActivity : AppCompatActivity() {
 
+    // STATE MANAGEMENT: Connects to our ViewModel. The 'by viewModels()' delegate
+    // ensures this ViewModel survives screen rotations.
     private val taskViewModel: TaskViewModel by viewModels()
     private lateinit var adapter: TaskAdapter
 
@@ -23,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val fabAdd = findViewById<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>(R.id.fabAdd)
 
+        // Initialize adapter and pass lambda functions to handle UI clicks
         adapter = TaskAdapter(
             tasks = emptyList(),
             onTaskDelete = { task -> taskViewModel.deleteTask(task) },
@@ -32,10 +36,13 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        // STATE MANAGEMENT: Observe the LiveData from the ViewModel.
+        // Whenever the data changes (item added/deleted/toggled), the UI updates automatically.
         taskViewModel.tasks.observe(this) { tasks ->
             adapter.updateTasks(tasks)
         }
 
+        // Navigate to the Add/Edit screen
         fabAdd.setOnClickListener {
             startActivity(Intent(this, AddEditTaskActivity::class.java))
         }
